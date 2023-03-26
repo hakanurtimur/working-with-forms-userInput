@@ -12,7 +12,7 @@ const BasicForm = (props) => {
     userBlurHandler: nameBlurHandler,
     valueIsValid: enteredNameIsValid,
     reset: resetName,
-  } = useInput((name) => name.trim() !== "");
+  } = useInput((name) => name.trim() !== '');
   const {
     value: enteredLastname,
     hasError: enteredLastnameHasError,

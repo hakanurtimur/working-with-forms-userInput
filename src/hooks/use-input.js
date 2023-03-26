@@ -1,33 +1,58 @@
-import { useState } from "react";
+import { useReducer } from "react";
+
+const inputReducer = (state, action) => {
+  if (action.type === "ENTER") {
+    return { value: action.value, isTouched: state.isTouched };
+  }
+  if (action.type === "BLUR") {
+    return { value: state.value, isTouched: true };
+  }
+  if (action.type === "RESET") {
+    return { value: "", isTouched: false };
+  }
+
+  return initialInputState;
+};
+
+const initialInputState = { value: "", isTouched: false };
 
 const useInput = (validateValue) => {
-  const [enteredValue, setEnteredValue] = useState("");
-  const [isTouched, setIsTouched] = useState(false);
+  const [inputState, dispatchInputState] = useReducer(
+    inputReducer,
+    initialInputState
+  );
 
-  const valueIsValid = validateValue(enteredValue);
+  const { value } = inputState;
+  const { isTouched } = inputState;
+
+  const valueIsValid = validateValue(value);
 
   const hasError = !valueIsValid && isTouched;
 
   const enterValueHandler = (event) => {
-    setEnteredValue(event.target.value);
+    dispatchInputState({
+      type: "ENTER",
+      value: event.target.value,
+    });
   };
 
   const userBlurHandler = (event) => {
-    setIsTouched(true);
+    dispatchInputState({
+      type: "BLUR",
+    });
   };
 
   function reset() {
-    setEnteredValue("");
-    setIsTouched(false);
+    dispatchInputState({ type: "RESET" });
   }
 
   return {
-    value: enteredValue,
+    value: value,
     hasError,
     enterValueHandler,
     userBlurHandler,
     valueIsValid: valueIsValid,
-    reset
+    reset,
   };
 };
 export default useInput;
